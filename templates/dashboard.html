@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Visão geral | Painel de Impressoras{% endblock %}
+
+{% block content %}
+<section class="cards-grid">
+  <article class="card metric">
+    <h2>Impressoras detectadas</h2>
+    <p class="value">{{ total_printers }}</p>
+  </article>
+  <article class="card metric">
+    <h2>Operacionais</h2>
+    <p class="value">{{ printers_ok }}</p>
+  </article>
+  <article class="card metric">
+    <h2>Impressões no dia</h2>
+    <p class="value">{{ daily_total_count }}</p>
+  </article>
+  <article class="card metric">
+    <h2>Coleta automática</h2>
+    <p class="value">5 min</p>
+  </article>
+</section>
+
+<section class="card">
+  <div class="section-header">
+    <h2>Status atual das impressoras</h2>
+    <span>Última atualização: {{ collected_at or 'sem dados' }}</span>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>IP</th>
+          <th>Nome</th>
+          <th>Modelo</th>
+          <th>Status</th>
+          <th>Folhas (total)</th>
+          <th>Toner</th>
+          <th>Alertas</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in printers %}
+        <tr>
+          <td>{{ p.ip }}</td>
+          <td>{{ p.nome or 'N/A' }}</td>
+          <td>{{ p.modelo or 'N/A' }}</td>
+          <td>
+            <span class="pill {{ 'ok' if not p.erro else 'bad' }}">{{ p.status or 'desconhecido' }}</span>
+          </td>
+          <td>{{ p.folhas_impressas if p.folhas_impressas is not none else 'N/A' }}</td>
+          <td>
+            {% if p.toner %}
+              {{ p.toner|join(', ') }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            {% if p.erro %}
+              Erro: {{ p.erro }}
+            {% elif p.alertas %}
+              {{ p.alertas|join('; ') }}
+            {% else %}
+              Sem alertas
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="empty">Nenhum dado disponível ainda. Aguarde a primeira coleta.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

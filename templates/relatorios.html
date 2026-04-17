@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Relatórios | Painel de Impressoras{% endblock %}
+
+{% block content %}
+<section class="cards-grid">
+  <article class="card metric">
+    <h2>Total de impressões hoje</h2>
+    <p class="value">{{ daily_total_count }}</p>
+  </article>
+  <article class="card metric">
+    <h2>Impressoras com volume</h2>
+    <p class="value">{{ daily_totals|length }}</p>
+  </article>
+  <article class="card metric">
+    <h2>Eventos de problema</h2>
+    <p class="value">{{ problem_history|length }}</p>
+  </article>
+</section>
+
+<section class="card">
+  <div class="section-header">
+    <h2>Dashboard de status</h2>
+    <span>Última atualização: {{ collected_at or 'sem dados' }}</span>
+  </div>
+  <canvas id="statusChart" height="120"></canvas>
+</section>
+
+<section class="card">
+  <div class="section-header">
+    <h2>Relatório de impressões do dia</h2>
+  </div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Impressora (IP)</th>
+          <th>Quantidade estimada hoje</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ip, total in daily_totals.items() %}
+        <tr>
+          <td>{{ ip }}</td>
+          <td>{{ total }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="2" class="empty">Ainda não há dados suficientes para calcular o relatório diário.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="card">
+  <div class="section-header">
+    <h2>Histórico de problemas</h2>
+  </div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Data/Hora (UTC)</th>
+          <th>IP</th>
+          <th>Nome</th>
+          <th>Problemas</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in problem_history %}
+        <tr>
+          <td>{{ event.timestamp }}</td>
+          <td>{{ event.ip }}</td>
+          <td>{{ event.nome }}</td>
+          <td>{{ event.problems|join(' | ') }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="empty">Nenhum problema recente encontrado.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const statusData = {{ status_dist | tojson }};
+  const labels = Object.keys(statusData);
+  const values = Object.values(statusData);
+
+  new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: ['#3B82F6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          labels: {
+            color: '#cdd6f4'
+          }
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}
