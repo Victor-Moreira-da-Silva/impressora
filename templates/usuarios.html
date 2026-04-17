@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Usuários | Painel de Impressoras{% endblock %}
+
+{% block content %}
+<section class="card">
+  <div class="section-header">
+    <h2>Cadastrar novo usuário</h2>
+  </div>
+  <form method="post" class="form-grid users-form">
+    <label>
+      Usuário
+      <input type="text" name="username" required />
+    </label>
+    <label>
+      Senha
+      <input type="password" name="password" minlength="6" required />
+    </label>
+    <label class="checkbox">
+      <input type="checkbox" name="is_admin" />
+      Perfil administrador
+    </label>
+    <button type="submit">Criar usuário</button>
+  </form>
+</section>
+
+<section class="card">
+  <div class="section-header">
+    <h2>Usuários cadastrados</h2>
+  </div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuário</th>
+          <th>Administrador</th>
+          <th>Criado em (UTC)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ 'Sim' if user.is_admin else 'Não' }}</td>
+          <td>{{ user.created_at }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="empty">Nenhum usuário cadastrado.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Login | Painel de Impressoras{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+  <h2>Entrar no painel</h2>
+  <p>Use sua conta para acessar o monitoramento.</p>
+  <form method="post" class="form-grid">
+    <label>
+      Usuário
+      <input type="text" name="username" required />
+    </label>
+    <label>
+      Senha
+      <input type="password" name="password" required />
+    </label>
+    <button type="submit">Entrar</button>
+  </form>
+  <small>Primeiro acesso: <strong>admin</strong> / <strong>admin123</strong> (troque depois).</small>
+</section>
+{% endblock %}
